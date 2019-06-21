@@ -3,17 +3,18 @@ Simple Tic Tac Toe game vs a computer
 The computer will place marker down at a random position
 
 The game board is displayed in a grid similar to a number keypad where the each grid is marked by a number 1-9
-`   |   |   
-  1 | 2 | 3
-    |   |   
- -----------
-    |   |   
-  4 | 5 | 6
-    |   |   
- -----------
-    |   |   
-  7 | 8 | 9
-    |   |   `
+
+  \|   \|   
+1 \| 2 \| 3
+  \|   \|   
+\-\-\-\-\-\-\-\-\-\-\-
+  \|   \|   
+4 \| 5 \| 6
+  \|   \|   
+\-\-\-\-\-\-\-\-\-\-\-
+  \|   \|   
+7 \| 8 \| 9
+  \|   \|   
 
 Instructions:
 1. Choose to play as X or O
