@@ -1,68 +1,26 @@
-# importing "random" for random operations
 import random
 import time
 # Needed for clear() function
 from os import system, name
 from time import sleep
 
-# This will start the game
+# Starts the game
 def start_game():
     # Initialize the board to be empty
-    main_board = [' ']*10
-    clear()
-    display_board(main_board)
-    player1_marker, player2_marker = player_input()
+    main_board = [' ']*9
+    marker1, marker2 = first_turn()
+    status = True
+    announcement = ''
 
-    # If user is X, they start first
-    if player1_marker == 'X':
-        # Keep prompting the player until they pick an open spot
-        while True:
-            p1spot = int(input("Your turn to mark a spot (1-9): "))
-            # Check if their choice is available
-            if space_check(main_board, p1spot):
-                place_marker(main_board, player1_marker, p1spot)
-                display_board(main_board)
-                break
-            else:
-                print(f"{p1spot} is already taken. Look at the board for available spots.")
-        # Keep assigning a random number until an available spot is chosen for the computer
-        while True:
-            # Assign p2spot to a random number between 1-9
-            p2spot = random.randrange(1, 10)
-            if space_check(main_board, p2spot):
-                # Wait 1.5 seconds before updating the board
-                time.sleep(1.5)
-                print(f"The computer has placed their marker at position {p2spot}")
-                place_marker(main_board, player2_marker, p2spot)
-                display_board(main_board)
-                break
-            else:
-                p2spot = random.randrange(1,10)
+    while True:
+        # Show the board
+        clear()
+        display_board(main_board)
 
-    # Else, the user is O and the computer will go first
-    else:
-        # Keep assigning a random number until an available spot is chosen for the computer
-        while True:
-            # Assign p2spot to a random number between 1-9
-            p2spot = random.randrange(1, 10)
-            if space_check(main_board, p2spot):
-                print(f"The computer has placed their marker at {p2spot}")
-                place_marker(main_board, player2_marker, p2spot)
-                display_board(main_board)
-                break
-            else:
-                p2spot = random.randrange(1,10)
 
-        # Keep prompting the player until they pick an open spot
-        while True:
-            p1spot = int(input("Your turn to mark a spot (1-9): "))
-            # Check if their choice is available
-            if space_check(main_board, p1spot):
-                place_marker(main_board, player1_marker, p1spot)
-                display_board(main_board)
-                break
-            else:
-                print(f"{p1spot} is already taken. Look at the board for available spots.")
+        status, announcement = check_conditions(main_board, marker1)
+        print announcement
+        if game
 
 # Introduces the game and displays the board with numbers to show the positions
 def intro():
@@ -120,29 +78,6 @@ def player_input():
 #def place_marker(board, marker, position):
     pass
 
-# Checks whether the position in the board is open and returns a boolean value. True = open, false = taken
-def space_check(board, position):
-    # Needs to be position - 1 because the list starts at 0
-    if board[position - 1] != ' ':
-        return False
-    else:
-        return True
-
-# Checks whether the board is full and returns a boolean value. True = full, false otherwise
-def full_board_check(board):
-    index = 0
-    while index < len(board):
-        if board[index] == ' ':
-            return False
-        else:
-            index += 1
-
-    return True
-
-# Places the player's marker at the given position on the baord
-def place_marker(board, marker, position):
-    board[position - 1] = marker
-
 # Checks to see if a mark has three in a row (horizontal, vertical, or diagonal) to win the game and returns a boolean value
 def win_check(board, mark):
     # Check if there was three in a row horizontally
@@ -162,6 +97,54 @@ def win_check(board, mark):
 
     return False
 
-# This is where the game begins!
+# Checks whether the board is full and returns a boolean value. True = full, false otherwise
+def full_board_check(board):
+    index = 0
+    while index < len(board):
+        if board[index] == ' ':
+            return False
+        else:
+            index += 1
+
+    return True
+
+# Asks the player where they want to place their marker and whether that spot is open
+def ask_player(board, mark):
+    question = "Choose where to place your " + mark
+    while True:
+        try:
+            choice = int(raw_input(question))
+        except ValueError:
+            print("Sorry. Choose a number between 1-9")
+            continue
+
+        if board[choice - 1] == " ":
+            board[choice - 1] = mark
+            break
+        else:
+            print(board[choice - 1] + " is taken. Look at the board for available spots")
+            continue
+
+# Checks whether the player won or if there is a tie and returns the game state and result
+def check_conditions(board, mark):
+    # Set the results of the game to be blank
+    result = ''
+    # Validate input
+    ask_player(mark)
+
+    if win_check(board, mark):
+        clear()
+        display_board(board)
+        result = mark + " won the game!"
+        game_state = False
+    elif full_board_check(board):
+        clear()
+        display_board(board)
+        result = "It was a TIE!"
+        game_state = False
+
+    return result, game_state
+
+# This is the where the game begins!
 intro()
 start_game()
