@@ -4,30 +4,61 @@ import time
 from os import system, name
 from time import sleep
 
+# Global variables
+main_board = [' ']*9
+status = True
+announcement = ''
+
 # Starts the game
 def start_game():
-    # Initialize the board to be empty
-    main_board = [' ']*9
+    global announcement
+    reset_board()
+
+    # Randomly assign marker1 and marker2 X or O
     marker1, marker2 = first_turn()
-    status = True
-    announcement = ''
 
     while True:
         # Show the board
         clear()
-        display_board(main_board)
+        display_board()
 
+        print(marker1, marker2)
+        # If marker1 is X, they go first
+        if marker1 == 'X':
+            # Player X
+            announcement, status = check_conditions(marker1)
+            print(announcement)
+            if status == False:
+                break
 
-        status, announcement = check_conditions(main_board, marker1)
-        print announcement
-        if game
+            # Player O
+            announcement, status = check_conditions(marker2)
+            print(announcement)
+            if status == False:
+                break
+        # Else they are O, and go second
+        else:
+            # Player X
+            announcement, status = check_conditions(marker2)
+            print(announcement)
+            if status == False:
+                break
+
+            # Player O
+            announcement, status = check_conditions(marker1)
+            print(announcement)
+            if status == False:
+                break
 
 # Introduces the game and displays the board with numbers to show the positions
 def intro():
+    global main_board
+    # Clear the current screen
     clear()
-    test_board = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    display_board(test_board)
-    print("Welcome to Tic-Tac-Toe! Here is what the game board will look like.")
+    main_board = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    display_board()
+    print("Welcome to Tic-Tac-Toe!")
+    print("Choose a number between 1-9 to place your marker on the board above")
     input("Press Enter to continue...")
 
 # Clears the terminal screen
@@ -39,44 +70,39 @@ def clear():
     else:
         _ = system('clear')
 
+# Resets the board to be empty and status = True
+def reset_board():
+    global main_board, status
+    main_board = [' ']*9
+    game_state = True
+
 # Displays the tic-tac-toe board
-def display_board(board):
+def display_board():
+    global main_board
     print("   |   |   ")
-    print(' ' + board[0] + ' ' + '|' + ' ' + board[1] + ' ' + '|' + ' ' + board[2] + ' ')
-    print("   |   |   ")
-    print("-----------")
-    print("   |   |   ")
-    print(' ' + board[3] + ' ' + '|' + ' ' + board[4] + ' ' + '|' + ' ' + board[5] + ' ')
+    print(' ' + main_board[0] + ' ' + '|' + ' ' + main_board[1] + ' ' + '|' + ' ' + main_board[2] + ' ')
     print("   |   |   ")
     print("-----------")
     print("   |   |   ")
-    print(' ' + board[6] + ' ' + '|' + ' ' + board[7] + ' ' + '|' + ' ' + board[8] + ' ')
+    print(' ' + main_board[3] + ' ' + '|' + ' ' + main_board[4] + ' ' + '|' + ' ' + main_board[5] + ' ')
+    print("   |   |   ")
+    print("-----------")
+    print("   |   |   ")
+    print(' ' + main_board[6] + ' ' + '|' + ' ' + main_board[7] + ' ' + '|' + ' ' + main_board[8] + ' ')
     print("   |   |   ")
 
-# Assigns the user a marker (X or O). Returns two character values
-def player_input():
-    # Take input from user if they want to be X or O
-    # Keep asking until they pick X or O; Use a While True  + if statements to emulate do while() loop
-    while True:
-        p1marker = input("Do you want to be X or O? ")
-        if p1marker.upper() == 'X':
-            p1marker = p1marker.upper()
-            p2marker = 'O'
-            print(f"You will play as {p1marker} and the computer will play as {p2marker}.")
-            break
-        elif p1marker.upper() == 'O':
-            p1marker = p1marker.upper()
-            p2marker = 'X'
-            print(f"You will play as {p1marker} and the computer will play as {p2marker}.")
-            break
-        else:
-            print(f"{p1marker} is not a valid option!")
+# Randomly ssigns the user a marker (X or O). Returns marker1 and marker2
+def first_turn():
+    flip = random.randint(0, 1)
 
-    return (p1marker, p2marker)
+    if flip == 0:
+        marker1 = 'X'
+        marker2 = 'O'
+    else:
+        marker1 = 'O'
+        marker2 = 'X'
 
-# Places the marker on the board given their marker and position selected
-#def place_marker(board, marker, position):
-    pass
+    return (marker1, marker2)
 
 # Checks to see if a mark has three in a row (horizontal, vertical, or diagonal) to win the game and returns a boolean value
 def win_check(board, mark):
@@ -109,41 +135,50 @@ def full_board_check(board):
     return True
 
 # Asks the player where they want to place their marker and whether that spot is open
-def ask_player(board, mark):
-    question = "Choose where to place your " + mark
+def ask_player(mark):
+    global main_board
+
+    question = mark + "'s turn. Choose where to place your marker: "
     while True:
         try:
-            choice = int(raw_input(question))
+            choice = int(input(question))
         except ValueError:
             print("Sorry. Choose a number between 1-9")
             continue
 
-        if board[choice - 1] == " ":
-            board[choice - 1] = mark
+        if main_board[choice - 1] == " ":
+            main_board[choice - 1] = mark
             break
         else:
-            print(board[choice - 1] + " is taken. Look at the board for available spots")
+            print(f"{choice} is taken. Look at the board for available spots")
             continue
 
 # Checks whether the player won or if there is a tie and returns the game state and result
-def check_conditions(board, mark):
+def check_conditions(mark):
+    global main_board, status, announcement
     # Set the results of the game to be blank
-    result = ''
+    announcement = ''
     # Validate input
     ask_player(mark)
 
-    if win_check(board, mark):
+    # Check for win
+    if win_check(main_board, mark):
         clear()
-        display_board(board)
-        result = mark + " won the game!"
-        game_state = False
-    elif full_board_check(board):
-        clear()
-        display_board(board)
-        result = "It was a TIE!"
-        game_state = False
+        display_board()
+        announcement = mark + " won the game!"
+        status = False
+    # Show the baord
+    clear()
+    display_board()
 
-    return result, game_state
+    # Check for a tie
+    if full_board_check(main_board):
+        clear()
+        display_board()
+        announcement = "It was a TIE!"
+        status = False
+
+    return announcement, status
 
 # This is the where the game begins!
 intro()
