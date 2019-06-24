@@ -5,25 +5,25 @@ from os import system, name
 from time import sleep
 
 # Global variables
+# Set the board to be an empty list
 main_board = [' ']*9
+# Game is on by default
 status = True
-announcement = ''
+announcement = marker1 = marker2 = ''
 
 # Starts the game
 def start_game():
-    global announcement
+    global announcement, marker1, marker2
     reset_board()
 
     # Randomly assign marker1 and marker2 X or O
     marker1, marker2 = first_turn()
-    print(f"Player 1 is {marker1} and the computer is {marker2}")
 
     while True:
         # Show the board
         clear()
         display_board()
 
-        print(marker1, marker2)
         # If marker1 is X, they go first
         if marker1 == 'X':
             # Player X
@@ -79,7 +79,8 @@ def reset_board():
 
 # Displays the tic-tac-toe board
 def display_board():
-    global main_board
+    global main_board, marker1, marker2
+    print(f"Player 1: {marker1}             Computer: {marker2}")
     print("   |   |   ")
     print(' ' + main_board[0] + ' ' + '|' + ' ' + main_board[1] + ' ' + '|' + ' ' + main_board[2] + ' ')
     print("   |   |   ")
@@ -165,7 +166,6 @@ def ask_computer(mark):
     print("Computer is thinking...")
     time.sleep(1.5)
     while True:
-        print(choice)
         if main_board[choice - 1] == " ":
             main_board[choice - 1] = mark
             break
@@ -227,6 +227,22 @@ def check_computer(mark):
 
     return announcement, status
 
+# Checks whether the game wants to be played again
+def replay():
+    ans = input("Do you want to play again? y/n: ")
+    if ans == 'y' or ans == 'Y':
+        return True
+    else:
+        return False
+
 # This is the where the game begins!
 intro()
-start_game()
+
+while True:
+    start_game()
+    # If they want to play again, start a new game
+    if replay():
+        continue
+    # Otherwise, break out of the loop
+    else:
+        break
