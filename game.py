@@ -16,6 +16,7 @@ def start_game():
 
     # Randomly assign marker1 and marker2 X or O
     marker1, marker2 = first_turn()
+    print(f"Player 1 is {marker1} and the computer is {marker2}")
 
     while True:
         # Show the board
@@ -26,26 +27,26 @@ def start_game():
         # If marker1 is X, they go first
         if marker1 == 'X':
             # Player X
-            announcement, status = check_conditions(marker1)
+            announcement, status = check_player(marker1)
             print(announcement)
             if status == False:
                 break
 
             # Player O
-            announcement, status = check_conditions(marker2)
+            announcement, status = check_computer(marker2)
             print(announcement)
             if status == False:
                 break
         # Else they are O, and go second
         else:
             # Player X
-            announcement, status = check_conditions(marker2)
+            announcement, status = check_computer(marker2)
             print(announcement)
             if status == False:
                 break
 
             # Player O
-            announcement, status = check_conditions(marker1)
+            announcement, status = check_player(marker1)
             print(announcement)
             if status == False:
                 break
@@ -153,13 +154,59 @@ def ask_player(mark):
             print(f"{choice} is taken. Look at the board for available spots")
             continue
 
+# Randomly assigns the computer a position between 1-9 if it is open
+def ask_computer(mark):
+    global main_board
+
+    # Randomly choose a number between 1-9
+    choice = random.randrange(1, 10)
+
+    # The computer has to "think" for 1.5 seconds
+    print("Computer is thinking...")
+    time.sleep(1.5)
+    while True:
+        print(choice)
+        if main_board[choice - 1] == " ":
+            main_board[choice - 1] = mark
+            break
+        else:
+            choice = random.randrange(1, 10)
+            continue
+
 # Checks whether the player won or if there is a tie and returns the game state and result
-def check_conditions(mark):
+def check_player(mark):
     global main_board, status, announcement
     # Set the results of the game to be blank
     announcement = ''
     # Validate input
     ask_player(mark)
+
+    # Check for win
+    if win_check(main_board, mark):
+        clear()
+        display_board()
+        announcement = mark + " won the game!"
+        status = False
+    # Show the baord
+    clear()
+    display_board()
+
+    # Check for a tie
+    if full_board_check(main_board):
+        clear()
+        display_board()
+        announcement = "It was a TIE!"
+        status = False
+
+    return announcement, status
+
+# Checks whether the computer won or if there is a tie and returns the game state and result
+def check_computer(mark):
+    global main_board, status, announcement
+    # Set the results of the game to be blank
+    announcement = ''
+    # Validate input
+    ask_computer(mark)
 
     # Check for win
     if win_check(main_board, mark):
